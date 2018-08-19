@@ -6,90 +6,109 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
-double bisseccao (Polinomio p, double a, double b, double eps,int *it, double *raiz){
-	double xm, xmN;
+double bisseccao (Polinomio p, double a, double b, double eps, int *it, double *raiz){
+	double xm, pxm, dpxm, xmn, pxmn, dpxmn, pa, dpa;
 
+	xmn = (a + b) / 2;
 
-	xm = a+b/2.0;
-	do{
-		xm == xmN;
-		if((calcPolinomio_rapido(a) * calcPolinomio_rapido(xm)) > 0){
-			a= xm;
+	do {
+		xm = xmn;
+		
+		if((calcPolinomio_rapido(p, a, &pa, &dpa) * calcPolinomio_rapido(p, xmn, &pxmn, &dpxmn)) > ZERO){
+			a = xm;
+		} 
+		else {
+			b = xm;
 		}
-		else
-			b=xm;
-		xmN = a+b/2.0;
-	}while(fabs((xmN - xm)/xmN) > eps);
+
+		xmn = (a + b) / 2;
+	} while(fabs((xmn - xm) / xmn) > eps);
+
+	raiz = xmn;
+
+	return 0;
 }
 
 
 double newtonRaphson (Polinomio p, double x0, double eps,int *it, double *raiz){
-	int k=1;
-	double x, erro;
+	double x, px0, dpx0;
 
+	calcPolinomio_rapido(p, x0, &px0, &dpx0);
 
+	if(dpx0 != ZERO){
+		
+		x = x0 - px0 / dpx0;
 
-	while(fabs((x-x0)/x) > eps && k < it){
-		x0 = x;
-		k++;
+		while(fabs((x - x0) / x) > eps){
+			x0 = x;
+			calcPolinomio_rapido(p, x0, &px0, &dpx0);
+			x = x0 - px0 / dpx0;
+		}
 
+		raiz = x;
+
+		return 0;
 	}
 
-	*raiz = x;
-	if ( k >= it){
-		return (-1);
-	}
-	else
-		return (0);
-
+	return -1;
 }
 
 
-double secante (Polinomio p, double x0, double x1, double eps,int *it, double *raiz)
-{
+double secante (Polinomio p, double x0, double x1, double eps, int *it, double *raiz){
+	double x, px0, dpx0, px1, dpx1;
 
+	calcPolinomio_rapido(p, x0, &px0, &dpx0);
+	calcPolinomio_rapido(p, x1, &px1, &dpx1);
+		
+	x = x1 - ((px1 * (x1 - x0)) / (px1 - px0));
+
+	while(fabs((x - x0) / x) > eps){
+		x0 = x1;
+		x1 = x;
+		calcPolinomio_rapido(p, x0, &px0, &dpx0);
+		calcPolinomio_rapido(p, x1, &px1, &dpx1);
+		
+		x = x1 - ((px1 * (x1 - x0)) / (px1 - px0));
+	}
+
+	raiz = x;
+
+	return 0;
 }
+
 
 
 void calcPolinomio_rapido(Polinomio p, double x, double *px, double *dpx){
- 	double b = p.p[p.grau];
- 	double c = b;
- 	int k;
+void calcPolinomio_rapido(Polinomio p, double x, double *px, double *dpx){
+	double poli, deri;
+	int k;
 
- 	for(k = p.grau - 1; k; k--){
- 		b = p.p[k] + b * x;
- 		c = b + c * x;
-  	}
+	poli = p.p[p.grau];
+	deri = poli;
 
-  	b = p.p[0] + b * x;
-  	*px = b;
-  	*dpx = c;
+	for(k = p.grau - 1; k; k--){
+		poli = p.p[k] + poli * x;
+		deri = poli + deri * x;
+	}
+
+	poli = p.p[0] + poli * x;
+
+	*px = poli;
+	*dpx = deri;
 }
-/* b = polinômio
-   c =  derivada */
 
 
 void calcPolinomio_lento(Polinomio p, double x, double *px, double *dpx){
-	double b = p.p[p.grau];
- 	double c = b;
+	double poli = p.p[p.grau];
+ 	double deri = poli;
  	int k;
 
  	for(k = p.grau-1; k; k--){
- 		b = pow(p.p[k], k) + b * x;
- 		c = b + c * x;
+ 		poli = pow(p.p[k], k) + poli * x;
+ 		deri = poli + deri * x;
   	}
 
-  	b = p.p[0] + b * x;
-  	*px = b;
-  	*dpx = c;
+  	poli = p.p[0] + poli * x;
+  	*px = poli;
+  	*dpx = deri;
 }
-
-
-
-
-
-
-
-
-
-
