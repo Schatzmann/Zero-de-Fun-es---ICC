@@ -20,6 +20,12 @@ double bisseccao (Polinomio p, double a, double b, double eps, int *it, double *
 double newtonRaphson (Polinomio p, double x0, double eps, int *it, double *raiz);
 double secante (Polinomio p, double x0, double x1, double eps, int *it, double *raiz);
 
+// Métodos Lentos
+double bisseccao_lento (Polinomio p, double a, double b, double eps, int *it, double *raiz);
+double newtonRaphson_lento (Polinomio p, double x0, double eps, int *it, double *raiz);
+double secante_lento (Polinomio p, double x0, double x1, double eps, int *it, double *raiz);
+
+
 // Cálculo de Polinômios
 void calcPolinomio_rapido(Polinomio p, double x, double *px, double *dpx );
 void calcPolinomio_lento(Polinomio p, double x, double *px, double *dpx );
